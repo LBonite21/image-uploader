@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardActions,
   Button,
   CircularProgress,
+  Grid,
 } from "@mui/material";
+// import Grid from "@mui/material/Grid2";
 import { ZoomIn, Delete } from "@mui/icons-material";
 import Image from "next/image";
 
@@ -65,10 +66,27 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
             initial="hidden"
             animate="visible"
           >
-            <Grid container spacing={3}>
+            <Grid
+              container
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(12, 1fr)",
+                gap: 3,
+              }}
+            >
               <AnimatePresence>
                 {filteredImages.map((image) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={image.id}>
+                  <Box
+                    key={image.id}
+                    sx={{
+                      gridColumn: {
+                        xs: "span 12",
+                        sm: "span 6",
+                        md: "span 4",
+                        lg: "span 3",
+                      },
+                    }}
+                  >
                     <motion.div
                       variants={itemVariants}
                       layout
@@ -174,7 +192,7 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
                         </CardActions>
                       </Card>
                     </motion.div>
-                  </Grid>
+                  </Box>
                 ))}
               </AnimatePresence>
             </Grid>
