@@ -3,7 +3,7 @@ import { writeFile, readdir, stat, mkdir } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 
-let imagesDatabase = {};
+let imagesDatabase = [];
 
 // Make sure the upload directory exists
 async function UploadDirectoryExists() {
@@ -68,6 +68,7 @@ export async function GET() {
 
 // Post image
 export async function POST(request) {
+    console.log("POST request received", request);
   try {
     // Get form data from request
     const formData = await request.formData();

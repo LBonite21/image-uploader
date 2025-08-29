@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { unlink, stat } from "fs/promises";
 import { join } from "path";
 
-let imagesDatabase = {};
+let imagesDatabase = [];
 
 // Need to populate imagesDatabase from the existing files in the upload directory
 async function getImageDatabase() {
