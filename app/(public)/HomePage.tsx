@@ -1,27 +1,30 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import { motion } from "framer-motion";
 import {
   Box,
   Button,
   TextField,
   Typography,
-  Card,
-  CardMedia,
-  CardActions,
-  Grid,
   Alert,
-  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
   Snackbar,
   InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import { CloudUpload, Delete, Search, Close } from "@mui/icons-material";
+import {
+  Search,
+} from "@mui/icons-material";
+import ImageUploadSection from "./components/ImageUploadSection";
+import ImagesGrid from "./components/ImagesGrid";
+import ImageModal from "./components/ImageModal";
+
+//#region Interfaces
 
 // Interfaces for image data and API responses
 interface ImageItem {
@@ -37,6 +40,65 @@ interface ApiResponse {
   images?: ImageItem[];
   image?: ImageItem;
 }
+
+//#endregion
+
+//#region Animation Variants
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    scale: 0.9,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+//#endregion
 
 export default function HomePage() {
   // State management
@@ -56,6 +118,16 @@ export default function HomePage() {
     open: false,
     image: null,
   });
+  const [fullImageModal, setFullImageModal] = useState<{
+    open: boolean;
+    image: ImageItem | null;
+  }>({
+    open: false,
+    image: null,
+  });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Fetch images from the server
   const fetchImages = useCallback(async () => {
@@ -210,186 +282,90 @@ export default function HomePage() {
   const handleCloseError = () => setError(null);
   const handleCloseSuccess = () => setSuccess(null);
 
+  // Handle full image view
+  const handleImageClick = (image: ImageItem) => {
+    setFullImageModal({ open: true, image });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <Box className="text-center mb-8">
-          <Typography
-            variant="h3"
-            component="h1"
-            className="font-bold text-gray-800 mb-2"
-          >
-            Image Gallery
-          </Typography>
-          <Typography variant="subtitle1" className="text-gray-600">
-            Upload, search, and manage your images
-          </Typography>
-        </Box>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Box className="text-center mb-8">
+            <Typography
+              variant="h3"
+              component="h1"
+              className="font-bold text-gray-800 mb-2"
+            >
+              Image Gallery
+            </Typography>
+            <Typography variant="subtitle1" className="text-gray-600">
+              Upload, search, and manage your images
+            </Typography>
+          </Box>
+        </motion.div>
 
         {/* Upload Section */}
-        <Card className="mb-8 p-6">
-          <Typography variant="h5" className="mb-4 font-semibold">
-            Upload New Image
-          </Typography>
-
-          <div className="space-y-4">
-            <Box className="flex items-center gap-4">
-              <input
-                id="file-input"
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <label htmlFor="file-input">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  startIcon={<CloudUpload />}
-                  className="normal-case"
-                >
-                  Choose Image
-                </Button>
-              </label>
-
-              {selectedFile && (
-                <Typography variant="body2" className="text-gray-600">
-                  {selectedFile.name}
-                </Typography>
-              )}
-            </Box>
-
-            {previewUrl && (
-              <Box className="relative max-w-[15rem]">
-                <Image
-                  src={previewUrl}
-                  alt="Preview"
-                  width={200}
-                  height={200}
-                  className="rounded-lg object-cover"
-                />
-                <IconButton
-                  onClick={clearPreview}
-                  className="!absolute top-0 right-0"
-                  size="small"
-                >
-                  <Close fontSize="small" className="bg-red-500 text-white hover:bg-red-600 rounded" />
-                </IconButton>
-              </Box>
-            )}
-
-            <Box>
-              <Button
-                onClick={handleUpload}
-                disabled={!selectedFile || uploadLoading}
-                variant="contained"
-                className="normal-case"
-                startIcon={
-                  uploadLoading ? (
-                    <CircularProgress size={20} />
-                  ) : (
-                    <CloudUpload />
-                  )
-                }
-              >
-                {uploadLoading ? "Uploading..." : "Upload Image"}
-              </Button>
-            </Box>
-          </div>
-        </Card>
+        <ImageUploadSection
+          selectedFile={selectedFile}
+          previewUrl={previewUrl}
+          uploadLoading={uploadLoading}
+          onFileSelect={handleFileSelect}
+          onUpload={handleUpload}
+          onClearPreview={clearPreview}
+        />
 
         {/* Search Section */}
-        <Box className="mb-6">
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Search images by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search className="text-gray-400" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-            className="bg-white"
-          />
-        </Box>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Box className="mb-6">
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Search images by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search className="text-gray-400" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              className="bg-white"
+            />
+          </Box>
+        </motion.div>
 
         {/* Images Grid */}
-        {loading ? (
-          <Box className="flex justify-center items-center py-12">
-            <CircularProgress size={60} />
-          </Box>
-        ) : (
-          <>
-            <Box className="mb-4">
-              <Typography variant="h6" className="text-gray-700">
-                {filteredImages.length} image
-                {filteredImages.length !== 1 ? "s" : ""} found
-              </Typography>
-            </Box>
+        <ImagesGrid
+          loading={loading}
+          filteredImages={filteredImages}
+          searchTerm={searchTerm}
+          containerVariants={containerVariants}
+          itemVariants={itemVariants}
+          onImageClick={handleImageClick}
+          onDeleteClick={handleDelete}
+        />
 
-            <Grid container spacing={3}>
-              {filteredImages.map((image) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={image.id}>
-                  <Card className="h-full flex flex-col">
-                    <CardMedia className="relative">
-                      <Image
-                        src={image.url}
-                        alt={image.name}
-                        width={300}
-                        height={200}
-                        className="object-cover w-full h-48"
-                      />
-                    </CardMedia>
-
-                    <Box className="p-3 flex-grow">
-                      <Typography
-                        variant="subtitle1"
-                        className="font-medium truncate"
-                      >
-                        {image.name}
-                      </Typography>
-                      <Typography variant="caption" className="text-gray-500">
-                        {new Date(image.uploadedAt).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-
-                    <CardActions className="p-3 pt-0">
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => setDeleteDialog({ open: true, image })}
-                        startIcon={<Delete />}
-                        className="normal-case"
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-
-            {filteredImages.length === 0 && !loading && (
-              <Box className="text-center py-12">
-                <Typography variant="h6" className="text-gray-500 mb-2">
-                  {searchTerm ? "No images found" : "No images uploaded yet"}
-                </Typography>
-                <Typography variant="body2" className="text-gray-400">
-                  {searchTerm
-                    ? "Try adjusting your search terms"
-                    : "Upload your first image to get started"}
-                </Typography>
-              </Box>
-            )}
-          </>
-        )}
+        {/* Full Image Modal */}
+        <ImageModal
+          open={fullImageModal.open}
+          image={fullImageModal.image}
+          isMobile={isMobile}
+          modalVariants={modalVariants}
+          onClose={() => setFullImageModal({ open: false, image: null })}
+        />
 
         {/* Delete Confirmation Dialog */}
         <Dialog
