@@ -45,7 +45,7 @@ export async function GET() {
         }
       }
     } catch (error) {
-      console.log("Upload directory not found or empty");
+      console.error("Upload directory not found or empty");
     }
 
     // Return images sorted by upload date
@@ -103,7 +103,7 @@ export async function POST(request) {
     const maxImageSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxImageSize) {
       return NextResponse.json(
-        { success: false, message: "File size exceeds 5MB limit" },
+        { success: false, message: "File size exceeds 25MB limit" },
         { status: 400 }
       );
     }
