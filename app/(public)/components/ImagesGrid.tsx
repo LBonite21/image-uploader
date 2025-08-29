@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Box,
   Typography,
@@ -8,9 +8,9 @@ import {
   CardActions,
   Button,
   CircularProgress,
-} from '@mui/material';
-import { ZoomIn, Delete } from '@mui/icons-material';
-import Image from 'next/image';
+} from "@mui/material";
+import { ZoomIn, Delete } from "@mui/icons-material";
+import Image from "next/image";
 
 interface ImageGridProps {
   loading: boolean;
@@ -44,7 +44,7 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           >
-            <CircularProgress size={60} />
+            <CircularProgress size={60} sx={{ color: "var(--color-blue-4)" }} />
           </motion.div>
         </Box>
       ) : (
@@ -54,7 +54,7 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <Box className="mb-4">
-            <Typography variant="h6" className="text-gray-700">
+            <Typography variant="h6" sx={{ color: "white", fontWeight: 600 }}>
               {filteredImages.length} image
               {filteredImages.length !== 1 ? "s" : ""} found
             </Typography>
@@ -77,53 +77,96 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
                         transition: { type: "spring", stiffness: 300 },
                       }}
                     >
-                      <Card className="h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <Card
+                        className="h-full flex flex-col transition-all duration-300"
+                        sx={{
+                          backgroundColor: "white",
+                          borderRadius: "16px",
+                          border: `2px solid var(--color-blue-4)`,
+                          boxShadow: "0 4px 20px rgba(47, 140, 190, 0.15)",
+                          "&:hover": {
+                            boxShadow: "0 8px 32px rgba(47, 140, 190, 0.25)",
+                            transform: "translateY(-4px)",
+                          },
+                        }}
+                      >
                         <Box
-                          className="relative cursor-pointer group"
+                          className="relative cursor-pointer group overflow-hidden"
                           onClick={() => onImageClick(image)}
+                          sx={{ borderRadius: "14px 14px 0 0" }}
                         >
                           <Image
                             src={image.url}
                             alt={image.name}
                             width={300}
                             height={200}
-                            className="object-cover w-full h-48"
+                            className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
                           />
                           <motion.div
                             initial={{ opacity: 0 }}
                             whileHover={{ opacity: 1 }}
-                            className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"
+                            className="absolute inset-0 flex items-center justify-center"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, rgba(0, 15, 21, 0.7), rgba(47, 140, 190, 0.7))",
+                            }}
                           >
-                            <ZoomIn className="text-white text-3xl" />
+                            <ZoomIn
+                              className="text-white text-3xl"
+                              sx={{
+                                filter:
+                                  "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
+                              }}
+                            />
                           </motion.div>
                         </Box>
 
-                        <Box className="p-3 flex-grow">
+                        <Box className="p-4 flex-grow">
                           <Typography
                             variant="subtitle1"
                             className="font-medium truncate"
+                            sx={{
+                              color: "var(--color-blue-1)",
+                              fontWeight: 600,
+                              fontSize: "16px",
+                            }}
                           >
                             {image.name}
                           </Typography>
                           <Typography
                             variant="caption"
-                            className="text-gray-500"
+                            sx={{
+                              color: "var(--color-blue-3)",
+                              fontSize: "12px",
+                            }}
                           >
                             {new Date(image.uploadedAt).toLocaleDateString()}
                           </Typography>
                         </Box>
 
-                        <CardActions className="p-3 pt-0">
+                        <CardActions className="p-4 pt-0">
                           <motion.div
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
                             <Button
                               size="small"
-                              color="error"
                               onClick={() => onDeleteClick(image.id)}
                               startIcon={<Delete />}
                               className="normal-case"
+                              sx={{
+                                backgroundColor: "#dc3545",
+                                color: "white",
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                padding: "8px 16px",
+                                "&:hover": {
+                                  backgroundColor: "#c82333",
+                                  transform: "translateY(-1px)",
+                                  boxShadow:
+                                    "0 4px 12px rgba(220, 53, 69, 0.3)",
+                                },
+                              }}
                             >
                               Delete
                             </Button>
@@ -143,11 +186,25 @@ const ImagesGrid: React.FC<ImageGridProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Box className="text-center py-12">
-                <Typography variant="h6" className="text-gray-500 mb-2">
+              <Box
+                className="text-center py-12 rounded-2xl"
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(10px)",
+                  border: `2px dashed rgba(255, 255, 255, 0.3)`,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  className="mb-2"
+                  sx={{ color: "white", fontWeight: 600 }}
+                >
                   {searchTerm ? "No images found" : "No images uploaded yet"}
                 </Typography>
-                <Typography variant="body2" className="text-gray-400">
+                <Typography
+                  variant="body2"
+                  sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                >
                   {searchTerm
                     ? "Try adjusting your search terms"
                     : "Upload your first image to get started"}

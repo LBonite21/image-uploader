@@ -17,9 +17,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Search,
-} from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import ImageUploadSection from "./components/ImageUploadSection";
 import ImagesGrid from "./components/ImagesGrid";
 import ImageModal from "./components/ImageModal";
@@ -288,7 +286,12 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-10">
+    <div
+      className="min-h-screen p-10"
+      style={{
+        background: `linear-gradient(135deg, var(--color-blue-1) 0%, var(--color-blue-2) 50%, var(--color-blue-3) 100%)`,
+      }}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -300,11 +303,15 @@ export default function HomePage() {
             <Typography
               variant="h3"
               component="h1"
-              className="font-bold text-gray-800 mb-2"
+              className="font-bold mb-2"
+              sx={{ color: "white" }}
             >
               Image Gallery
             </Typography>
-            <Typography variant="subtitle1" className="text-gray-600">
+            <Typography
+              variant="subtitle1"
+              sx={{ color: "rgba(255, 255, 255, 0.8)" }}
+            >
               Upload, search, and manage your images
             </Typography>
           </Box>
@@ -337,12 +344,28 @@ export default function HomePage() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Search className="text-gray-400" />
+                      <Search sx={{ color: "var(--color-blue-3)" }} />
                     </InputAdornment>
                   ),
                 },
               }}
-              className="bg-white"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                  "& fieldset": {
+                    borderColor: "var(--color-blue-4)",
+                    borderWidth: "2px",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "var(--color-blue-3)",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "var(--color-blue-4)",
+                  },
+                },
+              }}
             />
           </Box>
         </motion.div>
@@ -371,10 +394,18 @@ export default function HomePage() {
         <Dialog
           open={deleteDialog.open}
           onClose={() => setDeleteDialog({ open: false, image: null })}
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: "16px",
+              border: `2px solid var(--color-blue-4)`,
+            },
+          }}
         >
-          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogTitle sx={{ color: "var(--color-blue-1)", fontWeight: 600 }}>
+            Confirm Delete
+          </DialogTitle>
           <DialogContent>
-            <Typography>
+            <Typography sx={{ color: "var(--color-blue-2)" }}>
               Are you sure you want to delete "{deleteDialog.image?.name}"? This
               action cannot be undone.
             </Typography>
@@ -382,6 +413,13 @@ export default function HomePage() {
           <DialogActions>
             <Button
               onClick={() => setDeleteDialog({ open: false, image: null })}
+              sx={{
+                color: "var(--color-blue-3)",
+                borderColor: "var(--color-blue-3)",
+                "&:hover": {
+                  backgroundColor: "rgba(47, 140, 190, 0.1)",
+                },
+              }}
             >
               Cancel
             </Button>
@@ -389,8 +427,13 @@ export default function HomePage() {
               onClick={() =>
                 deleteDialog.image && handleDelete(deleteDialog.image.id)
               }
-              color="error"
               variant="contained"
+              sx={{
+                backgroundColor: "#dc3545",
+                "&:hover": {
+                  backgroundColor: "#c82333",
+                },
+              }}
             >
               Delete
             </Button>

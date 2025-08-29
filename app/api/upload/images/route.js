@@ -68,7 +68,7 @@ export async function GET() {
 
 // Post image
 export async function POST(request) {
-    console.log("POST request received", request);
+  console.log("POST request received", request);
   try {
     // Get form data from request
     const formData = await request.formData();
@@ -110,8 +110,10 @@ export async function POST(request) {
     }
 
     // Create file path with uuid; if faulty file extension default to jpg
-    const fileExtension = file.name.split(".").pop() || "jpg";
-    const uniqueFilename = `${uuidv4()}.${fileExtension}`;
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    // const timestamp = Date.now();
+    const sanitizedFileName = file.name.replace(/\s+/g, "_"); // replace spaces
+    const uniqueFilename = `${sanitizedFileName}.${fileExtension}`;
 
     // Make sure upload directory exists and get the path
     const uploadDir = await UploadDirectoryExists();

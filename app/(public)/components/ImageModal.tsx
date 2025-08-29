@@ -36,9 +36,13 @@ const ImageModal: React.FC<ImageModalProps> = ({
           slotProps={{
             paper: { sx: { bgcolor: "transparent", boxShadow: "none" } },
             backdrop: {
-              sx: { bgcolor: "rgba(0, 0, 0, 0.8)" },
-              onClick: onClose
-            }
+              sx: {
+                background:
+                  "linear-gradient(135deg, rgba(0, 15, 21, 0.9), rgba(3, 62, 93, 0.9), rgba(9, 76, 112, 0.9))",
+                backdropFilter: "blur(20px)",
+              },
+              onClick: onClose,
+            },
           }}
         >
           <motion.div
@@ -52,10 +56,16 @@ const ImageModal: React.FC<ImageModalProps> = ({
               onClick={onClose}
               className="!absolute top-4 right-4 z-10"
               size="large"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              sx={{
+                backgroundColor: "var(--color-blue-4)",
                 color: "white",
-                backdropFilter: "blur(10px)",
+                backdropFilter: "blur(20px)",
+                border: "2px solid rgba(255, 255, 255, 0.2)",
+                "&:hover": {
+                  backgroundColor: "var(--color-blue-3)",
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.3s ease",
               }}
             >
               <Close />
@@ -68,14 +78,40 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 width={isMobile ? 350 : 800}
                 height={isMobile ? 350 : 600}
                 className="object-contain max-w-full max-h-[90vh] rounded-lg"
-                style={{ width: "auto", height: "auto" }}
+                style={{
+                  width: "auto",
+                  height: "auto",
+                  border: `3px solid var(--color-blue-4)`,
+                  borderRadius: "16px",
+                  boxShadow: "0 12px 48px rgba(47, 140, 190, 0.3)",
+                }}
               />
 
-              <Box className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4 rounded-b-lg">
-                <Typography variant="h6" className="truncate">
+              <Box
+                className="absolute bottom-0 left-0 right-0 text-white p-4 rounded-b-2xl"
+                sx={{
+                  background:
+                    "linear-gradient(180deg, transparent 0%, rgba(0, 15, 21, 0.9) 100%)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  className="truncate"
+                  sx={{
+                    color: "white",
+                    fontWeight: 600,
+                    textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                  }}
+                >
                   {image.name}
                 </Typography>
-                <Typography variant="caption">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "rgba(255, 255, 255, 0.8)",
+                    textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+                  }}
+                >
                   Uploaded: {new Date(image.uploadedAt).toLocaleDateString()}
                 </Typography>
               </Box>
