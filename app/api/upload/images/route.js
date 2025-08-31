@@ -113,7 +113,7 @@ export async function POST(request) {
     const fileExtension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     // const timestamp = Date.now();
     const sanitizedFileName = file.name.replace(/\s+/g, "_"); // replace spaces
-    const uniqueFilename = `${sanitizedFileName}.${fileExtension}`;
+    const uniqueFilename = `${sanitizedFileName}`;
 
     // Make sure upload directory exists and get the path
     const uploadDir = await UploadDirectoryExists();
